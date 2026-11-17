@@ -61,7 +61,7 @@ export const KPICard = memo(function KPICard({ label, value, helperText, icon: I
             <Icon size={16} className={styles.icon} aria-hidden="true" />
           </span>
         </div>
-        <p className="text-3xl font-semibold tracking-tight text-foreground">{value}</p>
+        <p className="text-3xl font-semibold tracking-tight tabular-nums text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground leading-relaxed">{helperText}</p>
       </CardContent>
     </Card>

@@ -47,7 +47,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   )
 }
 
-export const IncomeOutcomeChart = memo(function IncomeOutcomeChart({ data, loading }: IncomeOutcomeChartProps) {
+const IncomeOutcomeChartComponent = ({ data, loading }: IncomeOutcomeChartProps) => {
   if (loading) {
     return (
       <Card className="border-border/60" aria-busy="true" aria-label="Loading chart data">
@@ -144,4 +144,6 @@ export const IncomeOutcomeChart = memo(function IncomeOutcomeChart({ data, loadi
       </CardContent>
     </Card>
   )
-})
+}
+
+export const IncomeOutcomeChart = memo(IncomeOutcomeChartComponent)

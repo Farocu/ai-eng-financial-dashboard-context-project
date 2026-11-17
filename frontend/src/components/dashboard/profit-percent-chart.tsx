@@ -48,7 +48,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   )
 }
 
-export const ProfitPercentChart = memo(function ProfitPercentChart({ data, loading }: ProfitPercentChartProps) {
+const ProfitPercentChartComponent = ({ data, loading }: ProfitPercentChartProps) => {
   if (loading) {
     return (
       <Card className="border-border/60" aria-busy="true" aria-label="Loading chart data">
@@ -77,7 +77,10 @@ export const ProfitPercentChart = memo(function ProfitPercentChart({ data, loadi
             No data available to display
           </div>
         ) : (
-          <figure role="img" aria-label={`Line chart showing monthly profit margin percentage from ${data[0]?.month} to ${data[data.length - 1]?.month}`}>
+          <figure
+            role="img"
+            aria-label={`Line chart showing monthly profit margin percentage from ${data[0]?.month} to ${data[data.length - 1]?.month}`}
+          >
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" strokeOpacity={0.6} />
@@ -132,3 +135,5 @@ export const ProfitPercentChart = memo(function ProfitPercentChart({ data, loadi
     </Card>
   )
 }
+
+export const ProfitPercentChart = memo(ProfitPercentChartComponent)

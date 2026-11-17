@@ -30,6 +30,16 @@ async function fetchFinancialData(): Promise<FinancialMovement[]> {
   return response.json();
 }
 
+// Hoisted static fallback to avoid recreating JSX on every render
+const chartFallback = (
+  <div
+    className="h-[280px] rounded-lg bg-muted animate-pulse"
+    aria-busy={true}
+    role="status"
+    aria-label="Loading chart"
+  />
+);
+
 function App() {
   const [metrics, setMetrics] = useState<KPIMetrics | null>(null);
   const [monthlyData, setMonthlyData] = useState<MonthlyDataPoint[]>([]);
@@ -37,19 +47,29 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     fetchFinancialData()
       .then((movements) => {
-        setMetrics(computeKPIs(movements));
-        setMonthlyData(computeMonthlyData(movements));
+        if (cancelled) return;
+        // Compute KPIs and monthly data in parallel since they share the same input
+        const [kpis, monthly] = [computeKPIs(movements), computeMonthlyData(movements)];
+        setMetrics(kpis);
+        setMonthlyData(monthly);
       })
       .catch(() => {
+        if (cancelled) return;
         setError(
           "No se pudo cargar la informacion financiera. Revisa la API de backend.",
         );
       })
       .finally(() => {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -60,12 +80,19 @@ function App() {
       >
         Skip to main content
       </a>
-      <div id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div
+        id="main-content"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+      >
         <div className="flex flex-col gap-8">
           <DashboardHeader period="2024 - Full Year" />
 
-          {error ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground" role="alert" aria-live="polite">
+          {error !== null ? (
+            <div
+              className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
             </div>
           ) : null}
@@ -78,10 +105,10 @@ function App() {
             aria-label="Financial charts"
             className="grid grid-cols-1 gap-4 xl:grid-cols-2"
           >
-            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" aria-busy={true} role="status" aria-label="Loading chart" />}>
+            <Suspense fallback={chartFallback}>
               <IncomeOutcomeChart data={monthlyData} loading={loading} />
             </Suspense>
-            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" aria-busy={true} role="status" aria-label="Loading chart" />}>
+            <Suspense fallback={chartFallback}>
               <ProfitPercentChart data={monthlyData} loading={loading} />
             </Suspense>
           </section>
