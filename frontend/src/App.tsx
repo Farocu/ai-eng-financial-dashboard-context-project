@@ -56,7 +56,7 @@ function App() {
     <main className="dark min-h-screen bg-background text-foreground">
       <a
         href="#main-content"
-        className="visually-hidden focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-ring"
       >
         Skip to main content
       </a>
@@ -65,7 +65,7 @@ function App() {
           <DashboardHeader period="2024 - Full Year" />
 
           {error ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground" role="alert" aria-live="polite">
               {error}
             </div>
           ) : null}
@@ -78,10 +78,10 @@ function App() {
             aria-label="Financial charts"
             className="grid grid-cols-1 gap-4 xl:grid-cols-2"
           >
-            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" />}>
+            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" aria-busy={true} role="status" aria-label="Loading chart" />}>
               <IncomeOutcomeChart data={monthlyData} loading={loading} />
             </Suspense>
-            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" />}>
+            <Suspense fallback={<div className="h-[280px] rounded-lg bg-muted animate-pulse" aria-busy={true} role="status" aria-label="Loading chart" />}>
               <ProfitPercentChart data={monthlyData} loading={loading} />
             </Suspense>
           </section>

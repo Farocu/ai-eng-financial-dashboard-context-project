@@ -37,7 +37,7 @@ export const KPICard = memo(function KPICard({ label, value, helperText, icon: I
 
   if (loading) {
     return (
-      <Card className="border-border/60" aria-busy="true" aria-label="Loading KPI data">
+      <Card className="border-border/60" aria-busy={true} aria-label="Loading KPI data">
         <CardContent className="p-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28" />

@@ -72,7 +72,7 @@ export const IncomeOutcomeChart = memo(function IncomeOutcomeChart({ data, loadi
       </CardHeader>
       <CardContent>
         {!hasData ? (
-          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm">
+          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm" role="status" aria-label="No chart data available">
             No data available to display
           </div>
         ) : (
@@ -120,7 +120,7 @@ export const IncomeOutcomeChart = memo(function IncomeOutcomeChart({ data, loadi
               </LineChart>
             </ResponsiveContainer>
             {/* Data table for screen readers */}
-            <table className="visually-hidden" aria-hidden="true">
+            <table className="visually-hidden">
               <caption>Monthly income and outcome data</caption>
               <thead>
                 <tr>
