@@ -59,7 +59,41 @@
 | `vercel-react-best-practices` | `vercel-labs/agent-skills` | `1a2c79d` | ✅ Sí |
 | `accessibility` (a11y) | `addyosmani/web-quality-skills` | `afa8da9` | ✅ Sí |
 
-### Criterio de selección
+### Comparación con alternativas del mercado
+
+#### Performance: `vercel-react-best-practices` vs alternativas
+
+| Alternativa | Por qué NO se usó |
+|-------------|-------------------|
+| **Lighthouse CI** | Herramienta de medición, no de corrección. Detecta problemas pero no prescribe fixes de código. `vercel-react-best-practices` incluye reglas accionables (código incorrecto → correcto) que Lighthouse no puede sugerir. |
+| **`webpack-bundle-analyzer`** | Vite 8 usa Rolldown, no webpack. `vite build --visualizer` requeriría `rollup-plugin-visualizer`. La skill ya cubre `manualChunks` sin dep extra. |
+| **`why-did-you-render`** | Debugging de re-renders en desarrollo. No aplica a build de producción ni a patrones de código estático. La skill cubre memo, hoisting y lazy loading desde el código fuente. |
+| **React DevTools Profiler** | Requiere interacción manual en runtime. La skill audita en estático sin necesidad de navegador. |
+
+**Decisión:** `vercel-react-best-practices` es la única skill del ecosistema Agent Skills que cubre performance React/Next.js con reglas priorizadas por impacto y ejemplos antes/después. No hay skill comparable de otros vendor en Agent Skills format que cubra performance React.
+
+#### Testing: `testing-and-local-runtime` (regla local) vs alternativas
+
+| Alternativa | Por qué NO se usó |
+|-------------|-------------------|
+| **Playwright / Cypress** | E2E y component testing. El dashboard actual es una SPA simple (1 pantalla, sin navegación, sin formularios). No hay flujos multi-página que justifiquen E2E. Los tests existentes (vitest + pytest) cubren lógica financiera y API. |
+| **@testing-library/react** | Component testing. Los componentes principales (charts con Recharts, KPIs con skeletons) son mayoritariamente presentacionales. La lógica computacional ya está en `financial-utils.test.ts`. Añadir component testing ahora añadiría falso coste de mantenimiento sin bugs detectados. |
+| **pytest + httpx (elegido)** | Ya en uso. Cubre la API completa (18 tests pasando). La regla local del proyecto documenta el patrón correcto. |
+
+**Decisión:** La regla local `testing-and-local-runtime.md` es la guía correcta porque está basada en la evidencia del repositorio (Docker Compose, healthcheck, suites existentes). Ninguna skill de Agent Skills de terceros cubre pytest + FastAPI + Docker Compose con el detalle específico del proyecto.
+
+#### Accesibilidad: `addyosmani/web-quality-skills` vs alternativas
+
+| Alternativa | Por qué NO se usó |
+|-------------|-------------------|
+| **axe-core / axe DevTools** | Herramienta de detección, no de corrección. Requiere navegador. La skill de addyosmani incluye patrones de código correcto/incorrecto, WCAG mappings, y referencias a Lighthouse audits. |
+| **WAVE** | Extensión de navegador, no automatizable en CI sin cuenta. Sin integración con Agent Skills. |
+| **Lighthouse CLI** | Ya referenciado dentro de la skill como método de auditoría. La skill lo usa como paso 1 del workflow, no como reemplazo. |
+| **Pa11y** | Solo CI, sin contexto de código fuente. No puede sugerir cambios en JSX/TSX. |
+
+**Decisión:** `addyosmani/web-quality-skills` es la única skill de accesibilidad disponible en Agent Skills con reglas WCAG 2.2, ejemplos de código y un workflow integrado (Lighthouse audit → leer snapshot → localizar componente → fijar → re-ejecutar).
+
+### Criterio de selección frente a otras skills del `skills-lock.json`
 
 Se aplicaron **2 de las 2 skills instaladas** en `skills-lock.json`. No se usaron otras porque:
 
@@ -88,7 +122,7 @@ Commit `ac9b32a` — 8 archivos modificados, 92 inserciones, 15 eliminaciones.
 
 #### `accessibility` (WCAG 2.2 + Lighthouse audits)
 
-Commit `TBD` — 3 archivos modificados.
+Commit `9c5dd06` — 3 archivos modificados.
 
 | Principio WCAG | Hallazgo | Cambio |
 |----------------|----------|--------|
