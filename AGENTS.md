@@ -7,6 +7,7 @@ Agents working on this project **must**:
 
 - Look for available **agent skills** in the directory:  
   `./.agents/skills`
+- For project-local skills stored in `./.skills`, load the relevant `SKILL.md` before working in its domain. A skill may also be linked from `./.agents/skills` for agent discovery.
 
 - Look for the **project memory bank** in:  
   `./memory-bank`  
