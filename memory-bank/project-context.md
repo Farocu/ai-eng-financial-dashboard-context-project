@@ -49,3 +49,68 @@
 
 - Revisar `AGENTS.md` y las reglas de `.agents/rules/` antes de cambiar código.
 - Las reglas de `.agents/rules/` describen convenciones propuestas y evidencia de este repo; revisar su estado antes de tratarlas como aprobadas.
+
+## Skills aplicadas
+
+### Instaladas en `skills-lock.json`
+
+| Skill | Origen | Commit | ¿Usada? |
+|-------|--------|--------|---------|
+| `vercel-react-best-practices` | `vercel-labs/agent-skills` | `1a2c79d` | ✅ Sí |
+| `accessibility` (a11y) | `addyosmani/web-quality-skills` | `afa8da9` | ✅ Sí |
+
+### Criterio de selección
+
+Se aplicaron **2 de las 2 skills instaladas** en `skills-lock.json`. No se usaron otras porque:
+
+- **`writing-guidelines`** (vercel-labs): aplica a prosa/documentación, no a código de dashboard. El repositorio no tiene archivos `.md` de documentación de producto que auditar.
+- **`web-design-guidelines`** (vercel-labs): aplica a diseño visual/UX. El dashboard ya fue auditado contra las reglas de UI vía `vercel-react-best-practices` y `accessibility`. Activar esta skill requeriría fetch externo desde `raw.githubusercontent.com`, lo que añade latencia y no cubre gaps detectados.
+- **`composition-patterns`** (vercel-labs): aplica a arquitectura de componentes React. El dashboard es una SPA pequeña (4 componentes de dashboard), donde los patrones de composición avanzados (compound components, context interfaces) añadirían sobreingeniería.
+- **`vercel-optimize`** (vercel-labs): requiere proyecto desplegado en Vercel con señales de observabilidad. Este proyecto no está desplegado en Vercel ni tiene tráfico.
+- **`react-native-skills`**, **`react-view-transitions`**: no aplican al stack (React web SPA, no React Native; sin View Transitions API).
+
+### Hallazgos y cambios por skill
+
+#### `vercel-react-best-practices` (R1–R8)
+
+Commit `ac9b32a` — 8 archivos modificados, 92 inserciones, 15 eliminaciones.
+
+| Regla | Práctica | Cambio |
+|-------|----------|--------|
+| R2 manualChunks | Bundle optimization | Separar vendor (react/react-dom) y charts (recharts) en chunks distintos |
+| R6.3 hoist-jsx | Static JSX hoisting | `chartFallback` movido fuera del componente |
+| R6.9 conditional-render | Ternary sobre && | Error rendering con ternario |
+| R6.10 resource-hints | Preconnect + preload + modulepreload | Google Fonts preconnect, preload de CSS de fuentes, modulepreload para entry |
+| R6.1 / server-hoist-static-io | Font loading + CLS | `@font-face` con `size-adjust: 102%` para Inter fallback; tabla de métricas de ascent/descent para minimizar CLS |
+| — | Page metadata | `color-scheme`, `theme-color`, Open Graph, Twitter card |
+| — | Tabular figures | `tabular-nums` en valores KPI para ancho de dígito estable |
+| — | TypeScript compat | `erasableSyntaxOnly: false` (bug TS 6.0.2); `memo(function)` → arrow function pattern |
+
+#### `accessibility` (WCAG 2.2 + Lighthouse audits)
+
+Commit `TBD` — 3 archivos modificados.
+
+| Principio WCAG | Hallazgo | Cambio |
+|----------------|----------|--------|
+| 1.1 Text alternatives | Gráficos de Recharts dependen solo de color para diferenciar income/outcome | Income: línea sólida (strokeWidth 2.5); Outcome: línea discontinua (`strokeDasharray="6 3"`) + dots con borde |
+| 1.4.1 Use of Color | Chart lines solo distinguibles por color | Patrón de dash añadido a outcome — usable sin percepción de color |
+| 4.1.3 Live regions | Empty state sin anuncio a screen readers | `aria-live="polite"` añadido a mensajes "No data available" en ambos charts |
+| 4.1.2 ARIA / landmarks | Sin issues — skip link, `<main>`, `<section aria-label>`, `<h1>` ya presentes | Sin cambio necesario |
+
+#### `testing-and-local-runtime` (regla local del proyecto)
+
+| Práctica | Hallazgo | Cambio |
+|----------|----------|--------|
+| Deterministic builds | `requirements.txt` sin versiones → builds no reproducibles | Versiones mínimas añadidas: `fastapi>=0.115.0`, `uvicorn>=0.32.0`, `debugpy>=1.8.0`, `pytest>=8.0.0`, `pytest-cov>=5.0.0`, `httpx>=0.28.0` |
+| Test suite verification | Backend 18/18, Frontend 6/6, Build OK, Lint OK | Verificado post-cambios |
+
+### Verificación post-cambio
+
+| Check | Estado |
+|-------|--------|
+| `vite build` | ✅ 10 chunks, sin warnings |
+| `tsc -b --noEmit` | ✅ 0 errores |
+| `vitest run` (frontend) | ✅ 6/6 passed |
+| `pytest` (backend) | ✅ 18/18 passed (1 warning pre-existente: starlette.testclient deprecation) |
+| `eslint .` (frontend) | ✅ Sin errores |
+| `requirements.txt` versionado | ✅ Versiones mínimas fijadas |

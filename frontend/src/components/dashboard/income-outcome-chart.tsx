@@ -72,7 +72,7 @@ const IncomeOutcomeChartComponent = ({ data, loading }: IncomeOutcomeChartProps)
       </CardHeader>
       <CardContent>
         {!hasData ? (
-          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm" role="status" aria-label="No chart data available">
+          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm" role="status" aria-live="polite" aria-label="No chart data available">
             No data available to display
           </div>
         ) : (
@@ -104,9 +104,10 @@ const IncomeOutcomeChartComponent = ({ data, loading }: IncomeOutcomeChartProps)
                   dataKey="income"
                   name="income"
                   stroke="var(--chart-income)"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   dot={{ r: 3, fill: 'var(--chart-income)', strokeWidth: 0 }}
                   activeDot={{ r: 5, strokeWidth: 0 }}
+                  strokeDasharray=""
                 />
                 <Line
                   type="monotone"
@@ -114,8 +115,9 @@ const IncomeOutcomeChartComponent = ({ data, loading }: IncomeOutcomeChartProps)
                   name="outcome"
                   stroke="var(--chart-outcome)"
                   strokeWidth={2}
-                  dot={{ r: 3, fill: 'var(--chart-outcome)', strokeWidth: 0 }}
+                  dot={{ r: 3, fill: 'var(--chart-outcome)', strokeWidth: 0, stroke: 'var(--chart-outcome)' }}
                   activeDot={{ r: 5, strokeWidth: 0 }}
+                  strokeDasharray="6 3"
                 />
               </LineChart>
             </ResponsiveContainer>

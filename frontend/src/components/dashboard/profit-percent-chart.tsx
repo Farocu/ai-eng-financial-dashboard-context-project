@@ -73,7 +73,7 @@ const ProfitPercentChartComponent = ({ data, loading }: ProfitPercentChartProps)
       </CardHeader>
       <CardContent>
         {!hasData ? (
-          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm" role="status" aria-label="No chart data available">
+          <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm" role="status" aria-live="polite" aria-label="No chart data available">
             No data available to display
           </div>
         ) : (
